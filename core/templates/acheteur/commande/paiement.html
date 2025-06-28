@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Paiement{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2 class="fw-bold mb-4">💳 Paiement</h2>
+    <p>Merci pour votre commande ! Veuillez choisir un mode de paiement :</p>
+
+    <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+        <a href="#" class="btn btn-outline-success">📱 Mobile Money</a>
+        <a href="#" class="btn btn-outline-primary">💳 Carte Bancaire</a>
+        <a href="#" class="btn btn-outline-dark">💵 Paiement à la livraison</a>
+        <a href="{% url 'crypto_paiement' %}" class="btn btn-outline-warning">🪙 Crypto-monnaie</a>
+    </div>
+</div>
+{% endblock %}

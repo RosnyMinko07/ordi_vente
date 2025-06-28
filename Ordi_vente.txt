@@ -1,0 +1,20 @@
+mini application de vente des ordinateurs 
+plate forme ou le client doit se connecter pour pouvoir acheter un ordinateur
+pour un tp de classe nous n'avons pas mis de moyement de paiement juste un achat comme sa
+seule l'acheteur peut s'inscrire et se connecter l'admin et le vendeur sont deja dans la base de donnee
+admin : nom d'utilisateur : admin 
+mot de passe : admin123
+
+vendeur : 
+nom utilisateur : jean
+mdp: jean1234
+
+acheteur :
+nom:
+rodrigue
+mdp: jojo12345
+
+sinon inscrivez votre acheteur
+
+
+MERCI!!!!!

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold">🛒 Mon Panier</h2>
+
+    {% if panier %}
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center shadow">
+            <thead class="table-light">
+                <tr>
+                    <th>Image</th>
+                    <th>Produit</th>
+                    <th>Type</th>
+                    <th>Quantité</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                    <th>Retirer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in panier %}
+                <tr>
+                    <td>
+                        <img src="{{ item.produit.image.url }}" alt="{{ item.produit.nom }}" class="img-thumbnail" style="width: 100px; height: auto;">
+                    </td>
+                    <td class="fw-semibold">{{ item.produit.nom }}</td>
+                    <td>{{ item.type_produit }}</td> {# ✅ Affiche le type de produit ici #}
+                    <td>{{ item.quantite }}</td>
+                    <td>{{ item.produit.prix|floatformat:0 }} FCFA</td>
+                    <td class="text-success fw-bold">{{ item.total|floatformat:0 }} FCFA</td>
+                    <td>
+                        <form method="post" action="{% url 'retirer_du_panier' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger" title="Retirer">
+                                ✖
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <h4 class="fw-bold">💰 Total : <span class="text-primary">{{ total|floatformat:0 }} FCFA</span></h4>
+        <a href="{% url 'commande' %}" class="btn btn-success btn-lg">
+            🛍️ Commander
+        </a>
+    </div>
+
+    {% else %}
+    <div class="text-center text-muted mt-5">
+        <p>Votre panier est vide.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

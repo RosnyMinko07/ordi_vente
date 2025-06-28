@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between mb-4">
+        <h2>Vos Produits</h2>
+        <a href="{% url 'ajouter_produit' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Ajouter un produit
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="get" class="row g-2">
+                        <div class="col-md-5">
+                            <select name="statut" class="form-select">
+                                <option value="">Tous les statuts</option>
+                                <option value="actif" {% if statut_filter == 'actif' %}selected{% endif %}>Actifs</option>
+                                <option value="inactif" {% if statut_filter == 'inactif' %}selected{% endif %}>Inactifs</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <select name="categorie" class="form-select">
+                                <option value="">Toutes catégories</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat.id }}" 
+                                    {% if selected_categorie == cat.id %}selected{% endif %}>
+                                    {{ cat.nom }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-filter"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover m-0">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Nom</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produit in produits %}
+                    <tr>
+                        <td>
+                            <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" 
+                                 class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                        </td>
+                        <td>{{ produit.nom }}</td>
+                        <td>{{ produit.prix }} FCFA</td>
+                        <td>
+                            {% if produit.stock < 5 %}
+                                <span class="badge bg-warning text-dark">{{ produit.stock }}</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ produit.stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if produit.est_actif %}
+                                <span class="badge bg-success">Actif</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactif</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'modifier_produit' produit.id %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'supprimer_produit' produit.id %}" 
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Supprimer ce produit ?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            Aucun produit trouvé. <a href="{% url 'ajouter_produit' %}">Ajoutez votre premier produit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

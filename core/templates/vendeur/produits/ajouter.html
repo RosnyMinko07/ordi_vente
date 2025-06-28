@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="bi bi-plus-circle"></i> Ajouter un nouveau produit</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="categorie" class="form-label">Catégorie</label>
+                    <select class="form-select" id="categorie" name="categorie" required>
+                        <option value="" disabled selected>Choisir une catégorie</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="nom" class="form-label">Nom du produit</label>
+                    <input type="text" class="form-control" id="nom" name="nom" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="prix" class="form-label">Prix (FCFA)</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" class="form-control" 
+                                   id="prix" name="prix" min="0.01" required>
+                            <span class="input-group-text">FCFA</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="stock" class="form-label">Stock initial</label>
+                        <input type="number" class="form-control" id="stock" 
+                               name="stock" min="1" value="1" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="etat" class="form-label">État du produit</label>
+                    <select class="form-select" id="etat" name="etat" required>
+                        <option value="neuf" selected>Neuf</option>
+                        <option value="occasion">Occasion</option>
+                        <option value="reconditionne">Reconditionné</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="image" class="form-label">Image du produit</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                    <div class="form-text">Format recommandé : 800x800px (JPEG/PNG)</div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Publier le produit
+                    </button>
+                    <a href="{% url 'liste_produits' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validation client avant soumission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const prix = parseFloat(document.getElementById('prix').value);
+    if (prix <= 0) {
+        alert('Le prix doit être supérieur à 0');
+        e.preventDefault();
+    }
+    
+    const stock = parseInt(document.getElementById('stock').value);
+    if (stock < 1) {
+        alert('Le stock initial doit être d\'au moins 1');
+        e.preventDefault();
+    }
+    
+    const image = document.getElementById('image').files[0];
+    if (!image) {
+        alert('Veuillez sélectionner une image pour le produit');
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Paiement Crypto{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold">🪙 Paiement en Crypto-monnaie</h2>
+    <p>Montant total : <strong>{{ total_fcfa }} FCFA</strong></p>
+    <p>Équivalent en USD : <strong>${{ total_usd }}</strong></p>
+    <p>Équivalent en Bitcoin (BTC) : <strong>{{ montant_btc }} BTC</strong></p>
+
+    <div class="text-center mt-4">
+        <a href="{{ charge_url }}" class="btn btn-warning">🔁 Continuer avec Coinbase</a>
+    </div>
+</div>
+{% endblock %}

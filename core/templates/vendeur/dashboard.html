@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard Vendeur{% endblock %}
+
+{% block content %}
+<div class="seller-dashboard">
+    <!-- Sidebar -->
+    <div class="seller-sidebar">
+        <div class="seller-profile">
+            <div class="seller-avatar">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <h3>{{ request.user.username }}</h3>
+            <p class="seller-email">{{ request.user.email }}</p>
+        </div>
+        
+        <nav class="seller-menu">
+            <a href="{% url 'dashboard_vendeur' %}" class="active">
+                <i class="bi bi-speedometer2"></i> Tableau de bord
+            </a>
+            <a href="{% url 'historique_ventes_vendeur' %}">
+                <i class="bi bi-receipt"></i> Historique des ventes
+            </a>
+            <a href="{% url 'liste_produits' %}">
+                <i class="bi bi-box-seam"></i> Mes produits
+            </a>
+            <a href="{% url 'ajouter_produit' %}">
+                <i class="bi bi-plus-circle"></i> Ajouter produit
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="seller-main-content">
+        <h1><i class="bi bi-speedometer2"></i> Tableau de bord</h1>
+        
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #e3f5ff;">
+                    <i class="bi bi-currency-dollar" style="color: #0d6efd;"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total des ventes</h3>
+                    <p>{{ total_ventes }} FCFA</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #e5f6ff;">
+                    <i class="bi bi-cart-check" style="color: #0dcaf0;"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Commandes ce mois</h3>
+                    <p>{{ commandes_mois.count }}</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #fff0f6;">
+                    <i class="bi bi-box-seam" style="color: #d63384;"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Produits en stock</h3>
+                    <p>{{ total_produits }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dernières ventes -->
+        <div class="dashboard-section">
+            <h2><i class="bi bi-clock-history"></i> Dernières ventes</h2>
+            {% if dernieres_ventes %}
+            <div class="sales-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Commande</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vente in dernieres_ventes %}
+                        <tr>
+                            <td>#{{ vente.id }}</td>
+                            <td>{{ vente.date_commande|date:"d/m/Y" }}</td>
+                            <td>{{ vente.client.username }}</td>
+                            <td>{{ vente.montant_total }} FCFA</td>
+                            <td>
+                                <span class="status-badge {{ vente.statut|lower }}">
+                                    {{ vente.get_statut_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-cart-x"></i>
+                <p>Aucune vente récente</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Produits à réapprovisionner -->
+        <div class="dashboard-section">
+            <h2><i class="bi bi-exclamation-triangle"></i> Produits à réapprovisionner</h2>
+            {% if produits_faible_stock %}
+            <div class="products-grid">
+                {% for produit in produits_faible_stock %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if produit.image %}
+                        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+                        {% else %}
+                        <img src="{% static 'images/default-product.jpg' %}" alt="Pas d'image">
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h4>{{ produit.nom }}</h4>
+                        <p class="product-stock {% if produit.stock < 3 %}low-stock{% endif %}">
+                            Stock: {{ produit.stock }}
+                        </p>
+                        <a href="{% url 'modifier_produit' produit.id %}" class="btn-edit">
+                            <i class="bi bi-pencil-square"></i> Modifier
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-check-circle"></i>
+                <p>Tous vos produits ont un stock suffisant</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.seller-dashboard {
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.seller-sidebar {
+    width: 280px;
+    background: #2c3e50;
+    color: white;
+    padding: 25px 15px;
+}
+
+.seller-profile {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.seller-avatar {
+    font-size: 3.5rem;
+    color: #adb5bd;
+    margin-bottom: 10px;
+}
+
+.seller-email {
+    color: #adb5bd;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.seller-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.seller-menu a {
+    color: #dee2e6;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.seller-menu a:hover {
+    background: #34495e;
+    color: white;
+}
+
+.seller-menu a.active {
+    background: #3498db;
+    color: white;
+}
+
+.seller-menu i {
+    font-size: 1.1rem;
+}
+
+.seller-main-content {
+    flex: 1;
+    padding: 30px;
+    background: #f8f9fa;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 25px 0;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+}
+
+.stat-info h3 {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.stat-info p {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.dashboard-section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.dashboard-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #495057;
+}
+
+.sales-table {
+    overflow-x: auto;
+}
+
+.sales-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sales-table th, .sales-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sales-table th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #adb5bd;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.product-image {
+    height: 120px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.product-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    color: #212529;
+}
+
+.product-stock {
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+.product-stock.low-stock {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.btn-edit:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .seller-dashboard {
+        flex-direction: column;
+    }
+    
+    .seller-sidebar {
+        width: 100%;
+    }
+    
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

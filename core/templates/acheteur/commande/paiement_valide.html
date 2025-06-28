@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Paiement Réussi{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold">✅ Paiement Confirmé</h2>
+    <p>{{ status }}</p>
+    <div class="text-center mt-4">
+        <a href="{% url 'accueil' %}" class="btn btn-primary">Retour à l’accueil</a>
+    </div>
+</div>
+{% endblock %}

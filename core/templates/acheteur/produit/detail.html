@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <img src="{{ produit.image.url }}" class="card-img-top" 
+                     alt="{{ produit.nom }}" style="max-height: 500px; object-fit: contain;">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h1>{{ produit.nom }}</h1>
+            <p class="text-muted">Vendu par <strong>{{ produit.vendeur.username }}</strong></p>
+            
+            <div class="d-flex align-items-center mb-3">
+                <h3 class="text-success mb-0">{{ produit.prix }} FCFA</h3>
+                <div class="ms-3">
+                    {% for crypto, prix in crypto_prices.items %}
+                    <span class="badge bg-dark me-1">
+                        {{ prix|floatformat:6 }} {{ crypto }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p class="card-text">{{ produit.description }}</p>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'ajouter_au_panier' produit.id %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <label for="quantite" class="col-form-label">Quantité :</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" id="quantite" name="quantite" 
+                               class="form-control" value="1" min="1" max="{{ produit.stock }}">
+                    </div>
+                    <div class="col-auto">
+                        {% if dans_le_panier %}
+                            <a href="{% url 'panier' %}" class="btn btn-warning">
+                                <i class="bi bi-cart-check"></i> Déjà au panier
+                            </a>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-cart-plus"></i> Ajouter au panier
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if produits_similaires %}
+    <hr class="my-5">
+    <h3 class="mb-4">Produits similaires</h3>
+    <div class="row">
+        {% for produit in produits_similaires %}
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 shadow-sm">
+                <a href="{% url 'detail_produit' produit.id %}">
+                    <img src="{{ produit.image.url }}" class="card-img-top" 
+                         alt="{{ produit.nom }}" style="height: 180px; object-fit: contain;">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">{{ produit.nom|truncatechars:30 }}</h5>
+                    <p class="text-success">{{ produit.prix }} FCFA</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

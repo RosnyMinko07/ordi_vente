@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Bienvenue sur notre boutique en ligne{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5 text-center">
+            <h1 class="display-5 fw-bold">Découvrez nos produits exceptionnels</h1>
+            <p class="col-md-8 fs-4 mx-auto">Des articles de qualité à des prix compétitifs avec paiement en ligne</p>
+            <a href="#produits" class="btn btn-primary btn-lg mt-3">Voir les produits</a>
+        </div>
+    </div>
+
+    <!-- Barre de recherche améliorée -->
+    <div class="d-flex justify-content-center mb-5">
+        <form method="get" class="w-75">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control form-control-lg" 
+                       placeholder="Rechercher un produit..." value="{{ recherche }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-2"></i>Rechercher
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Catégories rapides -->
+    <div class="mb-5">
+        <h3 class="mb-4 text-center"></h3>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            {% for cat in categories|slice:":6" %}
+            <a href="?categorie={{ cat.id }}" class="btn btn-outline-primary rounded-pill px-4">
+                {{ cat.nom }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Produits avec ancre -->
+    <h2 id="produits" class="mb-4 text-center">Nos Produits</h2>
+    
+    <div class="row">
+        {% for produit in produits %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 shadow-sm position-relative">
+                {% if produit.promotion %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    -{{ produit.promotion }}%
+                </span>
+                {% endif %}
+                
+                <a href="{% url 'detail_produit' produit.id %}">
+                    <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}" style="height: 180px; object-fit: contain;">
+                </a>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ produit.nom }}</h5>
+                    <p class="text-muted small flex-grow-1">{{ produit.description|truncatewords:12 }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            {% if produit.promotion %}
+                            <span class="text-danger fw-bold">{{ produit.get_prix_promotion }} FCFA</span>
+                            <small class="text-decoration-line-through text-muted ms-2">{{ produit.prix }} FCFA</small>
+                            {% else %}
+                            <span class="text-success fw-bold">{{ produit.prix }} FCFA</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'ajouter_au_panier' produit.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                        <button onclick="showLoginModal()" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-cart-plus"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Prix crypto -->
+                    <div class="mt-2 crypto-prices">
+                        {% for crypto, prix in produit.crypto_prices.items %}
+                        <span class="badge bg-dark me-1" title="Prix en {{ crypto }}">
+                            {{ prix|floatformat:6 }} {{ crypto }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> Aucun produit trouvé.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Section avantages -->
+    <div class="row mt-5 g-4">
+        <div class="col-md-4">
+            <div class="card border-0 text-center p-4 h-100">
+                <div class="card-body">
+                    <i class="bi bi-truck fs-1 text-primary"></i>
+                    <h5 class="card-title mt-3">Livraison Rapide</h5>
+                    <p class="card-text">Expédition sous 24h pour toutes les commandes passées avant 16h</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 text-center p-4 h-100">
+                <div class="card-body">
+                    <i class="bi bi-shield-lock fs-1 text-primary"></i>
+                    <h5 class="card-title mt-3">Paiement Sécurisé</h5>
+                    <p class="card-text">Transactions cryptées et protection des données</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 text-center p-4 h-100">
+                <div class="card-body">
+                    <i class="bi bi-credit-card fs-1 text-primary"></i>
+                    <h5 class="card-title mt-3">Paiement en ligne</h5>
+                    <p class="card-text">Paiements sécurisés par carte bancaire</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="card mt-5">
+        <div class="card-body text-center py-5">
+            <h3 class="card-title mb-3">Abonnez-vous à notre newsletter</h3>
+            <p class="card-text mb-4">Recevez nos offres exclusives et nouveautés en avant-première</p>
+            <form class="row g-2 justify-content-center">
+                <div class="col-md-6">
+                    <input type="email" class="form-control" placeholder="Votre email">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">S'abonner</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

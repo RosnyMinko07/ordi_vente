@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100"
+     style="background: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed; background-size: cover;">
+    
+    <div class="card shadow-lg p-4"
+         style="max-width: 450px; width: 100%; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 1rem;">
+        
+        <h2 class="text-center text-white mb-4">Inscription</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} text-center">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="username" class="form-label text-white">Nom d'utilisateur</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent text-white border-white">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    <input type="text" class="form-control bg-transparent text-white border-white" name="username" id="username" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label text-white">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent text-white border-white">
+                        <i class="fa fa-envelope"></i>
+                    </span>
+                    <input type="email" class="form-control bg-transparent text-white border-white" name="email" id="email" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label text-white">Mot de passe</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent text-white border-white">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <input type="password" class="form-control bg-transparent text-white border-white" name="password" id="password" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="role" class="form-label text-white">Vous êtes :</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent text-white border-white">
+                        <i class="fa fa-user-tag"></i>
+                    </span>
+                    <select class="form-select bg-transparent text-white border-white" name="role" id="role" required>
+                        <option value="" selected disabled>Choisissez un rôle</option>
+                        <option value="acheteur">Acheteur</option>
+                        <option value="vendeur">Vendeur</option>
+                    </select>
+                </div>
+                <small class="text-white-50">Les administrateurs sont créés directement en base de données</small>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-light">S'inscrire</button>
+            </div>
+        </form>
+
+        <p class="mt-3 text-center text-white">Déjà inscrit ? <a href="{% url 'connexion' %}" class="text-warning">Se connecter</a></p>
+    </div>
+</div>
+{% endblock %}

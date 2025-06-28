@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Confirmation de Commande{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold">🧾 Confirmation de la commande</h2>
+
+    {% if panier %}
+    <p>Vous êtes sur le point de finaliser votre commande. Voici un récapitulatif :</p>
+
+    <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle shadow">
+            <thead class="table-light">
+                <tr>
+                    <th>Image</th>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix Unitaire</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in panier %}
+                <tr>
+                    <td>
+                        <img src="{{ item.produit.image.url }}" alt="{{ item.produit.nom }}" class="img-thumbnail" style="width: 80px; height: auto;">
+                    </td>
+                    <td class="fw-semibold">{{ item.produit.nom }}</td>
+                    <td>{{ item.quantite }}</td>
+                    <td>{{ item.produit.prix|floatformat:0 }} FCFA</td>
+                    <td class="text-success fw-bold">{{ item.total|floatformat:0 }} FCFA</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="mt-4">Total général : <span class="text-primary">{{ total|floatformat:0 }} FCFA</span></h4>
+
+    <form method="post" action="{% url 'paiement' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary mt-4">💳 Procéder au paiement</button>
+    </form>
+    {% else %}
+    <div class="text-center text-muted mt-5">
+        <p>Votre panier est vide.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
