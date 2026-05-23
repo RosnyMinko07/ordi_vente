@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Barre de recherche -->
+    <div class="d-flex justify-content-end mb-3">
+        <form method="get" class="d-flex">
+            <input type="text" name="q" class="form-control me-2"
+                   placeholder="Rechercher..." value="{{ recherche }}">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-filter"></i> Filtres
+        </div>
+        <div class="card-body">
+            <form method="get" class="row gy-2 gx-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="form-label">Catégorie</label>
+                    <select name="categorie" class="form-select">
+                        <option value="">Toutes</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_categorie == cat.id %}selected{% endif %}>
+                            {{ cat.nom }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        Appliquer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Produits -->
+    <h2 class="mb-4">Nos Produits</h2>
+    <div class="row">
+        {% for produit in produits %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <a href="{% url 'detail_produit' produit.id %}">
+                    <img src="{{ produit.image.url }}" class="card-img-top"
+                         alt="{{ produit.nom }}" style="height: 200px; object-fit: contain;">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">{{ produit.nom }}</h5>
+                    <p class="text-muted small">{{ produit.description|truncatewords:15 }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="text-success mb-0">{{ produit.prix }} FCFA</h5>
+                        <form method="post" action="{% url 'ajouter_au_panier' produit.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-cart-plus"></i> Ajouter
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Prix crypto -->
+                    <div class="mt-2 crypto-prices">
+                        {% for crypto, prix in produit.crypto_prices.items %}
+                        <span class="badge bg-dark me-1">
+                            {{ prix }} {{ crypto }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Aucun produit trouvé.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

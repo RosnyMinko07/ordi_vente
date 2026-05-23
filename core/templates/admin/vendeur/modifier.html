@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="bi bi-person-gear"></i> Modifier le vendeur</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nom d'utilisateur</label>
+                    <input type="text" class="form-control" id="username" 
+                           name="username" value="{{ vendeur.username }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" 
+                           name="email" value="{{ vendeur.email }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Nouveau mot de passe (laisser vide si inchangé)</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Mettre à jour
+                    </button>
+                    <a href="{% url 'liste_vendeurs' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

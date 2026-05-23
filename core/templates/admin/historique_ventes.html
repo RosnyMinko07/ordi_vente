@@ -1,0 +1,53 @@
+{% extends 'admin/dashboard.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4"><i class="bi bi-journal-text"></i> Historique complet des ventes</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center align-middle shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Image</th>
+                    <th>Produit</th>
+                    <th>Vendeur</th>
+                    <th>Acheteur</th>
+                    <th>Quantité</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vente in ventes %}
+                <tr>
+                    <td>{{ vente.date_vente|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if vente.image %}
+                            <img src="{{ vente.image.url }}" alt="Image produit" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                            <span class="text-muted">Pas d'image</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ vente.produit }}</td>
+                    <td>{{ vente.vendeur.username }}</td>
+                    <td>
+                        {% if vente.acheteur %}
+                            {{ vente.acheteur.username }}
+                        {% else %}
+                            <span class="text-muted">Inconnu</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ vente.quantite }}</td>
+                    <td>{{ vente.prix_total }} FCFA</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-muted">Aucune vente enregistrée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

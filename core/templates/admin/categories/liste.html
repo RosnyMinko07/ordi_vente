@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Liste des catégories{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">📁 Liste des catégories</h2>
+
+    <a href="{% url 'ajouter_categorie' %}" class="btn btn-success mb-3">➕ Ajouter une catégorie</a>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categorie in categories %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ categorie.nom }}</td>
+                    <td>
+                        <a href="{% url 'modifier_categorie' categorie.id %}" class="btn btn-sm btn-primary">✏️ Modifier</a>
+                        <a href="{% url 'supprimer_categorie' categorie.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Confirmer la suppression ?')">🗑️ Supprimer</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-muted">Aucune catégorie enregistrée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
